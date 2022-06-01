@@ -15,10 +15,11 @@ const buttonMultiply = document.querySelector(".multiply");
 const buttonDivide = document.querySelector(".divide");
 const buttonClear = document.querySelector(".clear");
 const buttonEquals = document.querySelector(".equals");
-let displayValue;
 let num1;
 let num2;
-let operation;
+let result;
+let lastOperation;
+let clicked = false;
 
 function add (){
     let sum = 0;
@@ -53,13 +54,12 @@ function divide (){
 }
 
 function operate (operator, term1, term2){
-    return window[operator](term1, term2);
+    result = window[operator](term1, term2);
 }
 
 function parseDisplay(parseValue){
-    if (display.textContent === "" || display.textContent === "+" ||
-        display.textContent === "-" || display.textContent === "X" ||
-        display.textContent === "/"){
+    if (display.textContent === "" || 
+        isNaN(display.textContent.charAt(display.textContent.length - 1))){
         return 0;
     }   else
         return parseInt(parseValue);
@@ -67,7 +67,6 @@ function parseDisplay(parseValue){
 
 function displayShow (content){
     display.textContent = (parseDisplay(display.textContent) * 10) + content;
-    displayValue = parseDisplay(display.textContent);
 }
 
 button1.addEventListener("click", function(){displayShow(1);});
@@ -81,30 +80,80 @@ button8.addEventListener("click", function(){displayShow(8);});
 button9.addEventListener("click", function(){displayShow(9);});
 button0.addEventListener("click", function(){displayShow(0);});
 buttonAdd.addEventListener("click", function(){
-    operation = "add";
-    num1 = parseDisplay(display.textContent);
-    display.textContent = "+";
+    if (!clicked) {
+        num1 = parseDisplay(display.textContent);
+        display.textContent = "+";
+        clicked = true;
+        lastOperation = "add";
+    }   else {
+        num2 = parseDisplay(display.textContent);
+        operate(lastOperation, num1, num2);
+        num1 = result;
+        num2 = 0
+        display.textContent = result + "+";
+        lastOperation = "add";
+    }
+    
 })
 buttonSubstract.addEventListener("click", function(){
-    operation = "substract";
-    num1 = parseDisplay(display.textContent);
-    display.textContent = "-";
+    if (!clicked) {
+        num1 = parseDisplay(display.textContent);
+        display.textContent = "-";
+        clicked = true;
+        lastOperation = "substract";
+    }   else {
+        num2 = parseDisplay(display.textContent);
+        operate(lastOperation, num1, num2);
+        num1 = result;
+        num2 = 0
+        display.textContent = result + "-";
+        lastOperation = "substract";
+    }
+    
 })
 buttonMultiply.addEventListener("click", function(){
-    operation = "multiply";
-    num1 = parseDisplay(display.textContent);
-    display.textContent = "X";
+    if (!clicked) {
+        num1 = parseDisplay(display.textContent);
+        display.textContent = "X";
+        clicked = true;
+        lastOperation = "multiply";
+    }   else {
+        num2 = parseDisplay(display.textContent);
+        operate(lastOperation, num1, num2);
+        num1 = result;
+        num2 = 0
+        display.textContent = result + "X";
+        lastOperation = "multiply";
+    }
+    
 })
 buttonDivide.addEventListener("click", function(){
-    operation = "divide";
-    num1 = parseDisplay(display.textContent);
-    display.textContent = "/";
+    if (!clicked) {
+        num1 = parseDisplay(display.textContent);
+        display.textContent = "/";
+        clicked = true;
+        lastOperation = "divide";
+    }   else {
+        num2 = parseDisplay(display.textContent);
+        operate(lastOperation, num1, num2);
+        num1 = result;
+        num2 = 0
+        display.textContent = result + "/";
+        lastOperation = "divide";
+    }
+    
 })
 buttonClear.addEventListener("click", function(){
     num1 = 0;
+    num2 = 0;
+    result = 0;
+    lastOperation = ""
+    clicked = false;
     display.textContent = "";
 })
 buttonEquals.addEventListener("click", function(){
     num2 = parseDisplay(display.textContent);
-    display.textContent = operate(operation, num1, num2);
+    operate(lastOperation, num1, num2);
+    display.textContent = result;
+    clicked = false;
 })
