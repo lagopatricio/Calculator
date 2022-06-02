@@ -20,6 +20,8 @@ let num2;
 let result;
 let lastOperation;
 let clicked = false;
+let numberString;
+let error = false;
 
 function add (){
     let sum = 0;
@@ -54,7 +56,11 @@ function divide (){
 }
 
 function operate (operator, term1, term2){
-    result = window[operator](term1, term2);
+    let resultIntDigits = String(Math.abs(Math.floor(window[operator](term1, term2)))).length;
+    if (resultIntDigits > 7){
+        error = true;
+    }   else
+        result = parseFloat((window[operator](term1, term2)).toFixed(7 - resultIntDigits));
 }
 
 function parseDisplay(parseValue){
@@ -62,11 +68,13 @@ function parseDisplay(parseValue){
         isNaN(display.textContent.charAt(display.textContent.length - 1))){
         return 0;
     }   else
-        return parseInt(parseValue);
+        return parseFloat(parseValue);
 }
 
 function displayShow (content){
-    display.textContent = (parseDisplay(display.textContent) * 10) + content;
+    if (!error && String(parseDisplay(display.textContent)).length < 7){
+        display.textContent = (parseDisplay(display.textContent) * 10) + content;
+    }
 }
 
 button1.addEventListener("click", function(){displayShow(1);});
@@ -80,68 +88,86 @@ button8.addEventListener("click", function(){displayShow(8);});
 button9.addEventListener("click", function(){displayShow(9);});
 button0.addEventListener("click", function(){displayShow(0);});
 buttonAdd.addEventListener("click", function(){
-    if (!clicked) {
-        num1 = parseDisplay(display.textContent);
-        display.textContent = "+";
-        clicked = true;
-        lastOperation = "add";
-    }   else {
-        num2 = parseDisplay(display.textContent);
-        operate(lastOperation, num1, num2);
-        num1 = result;
-        num2 = 0
-        display.textContent = result + "+";
-        lastOperation = "add";
+    if (!error) {
+        if (!clicked) {
+            num1 = parseDisplay(display.textContent);
+            display.textContent = "+";
+            clicked = true;
+            lastOperation = "add";
+        }   else {
+            num2 = parseDisplay(display.textContent);
+            operate(lastOperation, num1, num2);
+            if (error){
+                display.textContent = "ERROR";
+            }   else {
+                num1 = result;
+                num2 = 0
+                display.textContent = result + "+";
+                lastOperation = "add";
+            }
+        }
     }
-    
 })
 buttonSubstract.addEventListener("click", function(){
-    if (!clicked) {
-        num1 = parseDisplay(display.textContent);
-        display.textContent = "-";
-        clicked = true;
-        lastOperation = "substract";
-    }   else {
-        num2 = parseDisplay(display.textContent);
-        operate(lastOperation, num1, num2);
-        num1 = result;
-        num2 = 0
-        display.textContent = result + "-";
-        lastOperation = "substract";
+    if (!error) {
+        if (!clicked) {
+            num1 = parseDisplay(display.textContent);
+            display.textContent = "-";
+            clicked = true;
+            lastOperation = "substract";
+        }   else {
+            num2 = parseDisplay(display.textContent);
+            operate(lastOperation, num1, num2);
+            if (error) {
+                display.textContent = "ERROR";
+            }   else
+                num1 = result;
+                num2 = 0
+                display.textContent = result + "-";
+                lastOperation = "substract";
+        }
+        
     }
-    
 })
 buttonMultiply.addEventListener("click", function(){
-    if (!clicked) {
-        num1 = parseDisplay(display.textContent);
-        display.textContent = "X";
-        clicked = true;
-        lastOperation = "multiply";
-    }   else {
-        num2 = parseDisplay(display.textContent);
-        operate(lastOperation, num1, num2);
-        num1 = result;
-        num2 = 0
-        display.textContent = result + "X";
-        lastOperation = "multiply";
+    if (!error) {
+        if (!clicked) {
+            num1 = parseDisplay(display.textContent);
+            display.textContent = "X";
+            clicked = true;
+            lastOperation = "multiply";
+        }   else {
+            num2 = parseDisplay(display.textContent);
+            operate(lastOperation, num1, num2);
+            if (error) {
+                display.textContent = "ERROR";
+            }   else
+                num1 = result;
+                num2 = 0
+                display.textContent = result + "X";
+                lastOperation = "multiply";
+        }
     }
-    
 })
 buttonDivide.addEventListener("click", function(){
-    if (!clicked) {
-        num1 = parseDisplay(display.textContent);
-        display.textContent = "/";
-        clicked = true;
-        lastOperation = "divide";
-    }   else {
-        num2 = parseDisplay(display.textContent);
-        operate(lastOperation, num1, num2);
-        num1 = result;
-        num2 = 0
-        display.textContent = result + "/";
-        lastOperation = "divide";
+    if (!error) {
+        if (!clicked) {
+            num1 = parseDisplay(display.textContent);
+            display.textContent = "/";
+            clicked = true;
+            lastOperation = "divide";
+        }   else {
+            num2 = parseDisplay(display.textContent);
+            operate(lastOperation, num1, num2);
+            if (error) {
+                display.textContent = "ERROR";
+            }   else
+                num1 = result;
+                num2 = 0
+                display.textContent = result + "/";
+                lastOperation = "divide";
+        }
     }
-    
 })
 buttonClear.addEventListener("click", function(){
     num1 = 0;
@@ -149,11 +175,17 @@ buttonClear.addEventListener("click", function(){
     result = 0;
     lastOperation = ""
     clicked = false;
+    error = false;
     display.textContent = "";
 })
 buttonEquals.addEventListener("click", function(){
-    num2 = parseDisplay(display.textContent);
-    operate(lastOperation, num1, num2);
-    display.textContent = result;
-    clicked = false;
+    if (!error) {
+        num2 = parseDisplay(display.textContent);
+        operate(lastOperation, num1, num2);
+        if (error) {
+            display.textContent = "ERROR";
+        }   else
+        display.textContent = result;
+        clicked = false;
+    }
 })
